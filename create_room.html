@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Create Room – Cloud Mafia</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: url('background.jpg') no-repeat center/cover fixed;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 20px;
+    }
+    .card {
+      background: rgba(0,0,0,0.85);
+      border-radius: 16px;
+      box-shadow: 0 0 30px crimson;
+      padding: 30px;
+      width: 360px;
+      max-width: 100%;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+    h1 {
+      color: crimson;
+      font-size: 28px;
+    }
+    label {
+      text-align: left;
+      font-size: 16px;
+      color: #ddd;
+    }
+    input, select {
+      width: 100%;
+      padding: 10px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: #fff;
+      margin-top: 6px;
+    }
+    button {
+      padding: 12px;
+      font-size: 18px;
+      border: none;
+      border-radius: 50px;
+      background: crimson;
+      color: #fff;
+      cursor: pointer;
+      box-shadow: 0 0 20px crimson;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #ff0033;
+      box-shadow: 0 0 30px crimson, 0 0 50px crimson;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <h1>Create a Game Room</h1>
+
+    <label for="playerName">Your Name</label>
+    <input type="text" id="playerName" placeholder="Enter your name" />
+
+    <label for="playerCount">Number of Players</label>
+    <select id="playerCount">
+      <option disabled selected>Select</option>
+      <script>
+        for (let i = 7; i <= 15; i++) {
+          document.write(`<option value="${i}">${i} players</option>`);
+        }
+      </script>
+    </select>
+
+    <button id="createBtn">Create & Go to Lobby</button>
+  </div>
+
+  <script>
+    // generate a 6‑char code
+    function makeCode() {
+      const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+      return Array.from({length:6})
+        .map(() => chars.charAt(Math.floor(Math.random()*chars.length)))
+        .join('');
+    }
+
+    document.getElementById('createBtn').onclick = async () => {
+      const name  = document.getElementById('playerName').value.trim();
+      const count = document.getElementById('playerCount').value;
+      if (!name || !count) {
+        return alert('Please fill in both fields.');
+      }
+
+      // 1) Create room on backend
+      const code = makeCode();
+      try {
+        const resp = await fetch('http://localhost:3000/create-room', {
+          method: 'POST',
+          headers: {'Content-Type':'application/json'},
+          body: JSON.stringify({ roomCode: code, playerCount: count })
+        });
+        if (!resp.ok) throw 'error';
+      } catch {
+        return alert('Unable to connect to server.');
+      }
+
+      // 2) Redirect to join_room.html with params
+      //    join_room.html will auto-join you and show lobby.
+      window.location.href = `join_room.html?roomCode=${code}&playerName=${encodeURIComponent(name)}`;
+    };
+  </script>
+
+</body>w
+</html>

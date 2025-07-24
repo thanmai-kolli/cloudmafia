@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Join Room - Cloud Mafia</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Orbitron', sans-serif;
+      background: linear-gradient(to bottom, #000000, #1a001a);
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+    }
+    .welcome-card {
+      background-color: #2e2e2e;
+      padding: 40px 60px;
+      border-radius: 30px;
+      box-shadow: 0 0 40px 10px #ffb6c1;
+      text-align: center;
+      transition: all 0.5s ease;
+    }
+    .welcome-card h1 {
+      color: red;
+      text-shadow: 0 0 15px red;
+      font-size: 36px;
+      margin-bottom: 10px;
+    }
+    .welcome-card p, label {
+      color: #ddd;
+      font-size: 18px;
+      margin: 10px 0;
+    }
+    .button-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+    .btn {
+      background-color: crimson;
+      color: white;
+      border: none;
+      padding: 14px 24px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 12px;
+      box-shadow: 0 0 15px crimson;
+      transition: 0.3s ease;
+      text-decoration: none;
+    }
+    .btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #ff4d6d;
+    }
+    .cancel-btn {
+      background-color: #444;
+      box-shadow: 0 0 15px #444;
+    }
+    .cancel-btn:hover {
+      background-color: #555;
+      box-shadow: 0 0 20px #555;
+    }
+    .popup {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: #111;
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 0 25px crimson;
+      text-align: center;
+      z-index: 999;
+      display: none;
+    }
+    .popup h2 {
+      margin-bottom: 20px;
+      font-size: 28px;
+    }
+    .popup p {
+      color: white;
+      font-size: 20px;
+      margin-bottom: 25px;
+    }
+    .popup select {
+      font-size: 16px;
+      padding: 8px;
+      margin-top: 10px;
+      border-radius: 8px;
+      background-color: #333;
+      color: white;
+      border: 1px solid crimson;
+    }
+    .night-mode {
+      background-color: #0c001a;
+      color: white;
+      display: none;
+      height: 100vh;
+      width: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .night-mode h1 {
+      font-size: 36px;
+      color: #b200ff;
+      margin-bottom: 20px;
+      text-shadow: 0 0 10px #b200ff;
+    }
+    input[type="text"] {
+      padding: 10px;
+      margin: 10px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: 1px solid crimson;
+      background-color: #222;
+      color: white;
+    }
+    .mafia-chat {
+        position: absolute;
+        bottom: 20px;
+        left: 20px;
+        width: 300px;
+        height: 250px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid crimson;
+        border-radius: 10px;
+        padding: 10px;
+        display: none;
+        flex-direction: column;
+    }
+    .mafia-chat-messages {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #444;
+    }
+    .mafia-chat-messages p {
+        font-size: 14px;
+        word-wrap: break-word;
+        margin: 5px 0;
+    }
+    .mafia-chat-input-group {
+        display: flex;
+    }
+    .mafia-chat-input {
+        flex-grow: 1;
+        background: #222;
+        border: none;
+        color: white;
+        padding: 5px;
+        border-radius: 5px;
+    }
+    .mafia-chat-send-btn {
+        margin-left: 5px;
+        padding: 5px 10px;
+        background: crimson;
+        border: none;
+        color: white;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .day-mode {
+        display: none;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        background: rgba(0, 0, 0, 0.7);
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+    }
+    .public-chat {
+        width: 80%;
+        max-width: 600px;
+        height: 250px;
+        background: rgba(0, 0, 0, 0.8);
+        border: 2px solid #fff;
+        border-radius: 10px;
+        padding: 10px;
+        flex-direction: column;
+        margin-top: 20px;
+    }
+    .public-chat-messages, .voting-options {
+        flex-grow: 1;
+        overflow-y: auto;
+        margin-bottom: 10px;
+        border-bottom: 1px solid #444;
+    }
+    .voting-popup {
+        display: none;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        position: fixed;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background: #111;
+        padding: 30px;
+        border-radius: 20px;
+        box-shadow: 0 0 25px crimson;
+    }
+    
+    .public-chat-wrapper {
+        position: relative;
+    width: 100%;
+    height: 100vh;
+    background: url('https://webimages8.s3.ap-south-1.amazonaws.com/nightbg.jpg') no-repeat center center/cover;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+
+  .overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1;
+  }
+
+  .public-chat-box {
+    z-index: 2;
+    width: 90%;
+    max-width: 600px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid #fff;
+    border-radius: 15px;
+    padding: 20px;
+    color: #fff;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 30px #fff3;
+  }
+
+  .public-chat-box h1, .public-chat-box h2 {
+    text-align: center;
+    text-shadow: 0 0 10px #fff;
+  }
+
+  .public-chat-messages {
+    height: 250px;
+    overflow-y: auto;
+    border-bottom: 1px solid #fff5;
+    margin-bottom: 10px;
+    padding: 5px;
+  }
+
+  .public-chat-messages p {
+    font-size: 14px;
+    margin: 5px 0;
+    word-wrap: break-word;
+  }
+
+  .mafia-chat-input-group {
+    display: flex;
+    gap: 5px;
+  }
+
+  .mafia-chat-input {
+    flex: 1;
+    background: #111;
+    color: #fff;
+    border: 1px solid #ccc;
+    padding: 10px;
+    border-radius: 8px;
+  }
+
+  .mafia-chat-send-btn {
+    background: crimson;
+    color: #fff;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 8px;
+    cursor: pointer;
+  }
+
+  .eliminated {
+    position: relative;
+  }
+
+  .eliminated::after {
+    content: "✖";
+    position: absolute;
+    right: -10px;
+    top: 0;
+    color: crimson;
+    font-size: 18px;
+  }
+    .fade-in { animation: fadeIn 0.5s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.95); } to { opacity: 1; transform: scale(1); } }
+    .pulse-effect { animation: pulse 1.5s infinite; }
+    @keyframes pulse { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(1.05); opacity: 0.8; } 100% { transform: scale(1); opacity: 1; } }
+    .night-theme { background: linear-gradient(to bottom, #0c001a, #4a004a); border: 2px solid #b200ff; box-shadow: 0 0 40px 10px #b200ff; }
+    .day-theme { background: linear-gradient(to bottom, #2e2e2e, #555555); border: 2px solid #f8de4c; box-shadow: 0 0 40px 10px #f8de4c; }
+    .night-bg { background: #000 url('https://webimages8.s3.ap-south-1.amazonaws.com/nightbg.jpg') no-repeat center center fixed; background-size: cover; }
+    .day-bg { background: #fff url('https://webimages8.s3.ap-south-1.amazonaws.com/daybg.jpg') no-repeat center center fixed; background-size: cover; }
+    .copy-btn {
+        background: #2e2e2e;
+        color: #f8de4c;
+        border: 1px solid #f8de4c;
+        margin-left: 10px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+    .copy-btn:hover { background: #f8de4c; color: #2e2e2e; }
+    .player-join-message { color: #90ee90; font-size: 14px; animation: fadeOut 2s forwards; }
+    .player-left-message { color: #ff6347; font-size: 14px; animation: fadeOut 2s forwards; }
+    @keyframes fadeOut { 0% { opacity: 1; } 100% { opacity: 0; display: none; } }
+    .btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="welcome-card fade-in" id="joinForm">
+    <h1>Join Game</h1>
+    <label for="roomCode">Enter Room Code:</label><br>
+    <input type="text" id="roomCode"><br>
+    <p id="playerCount">Players in room: 0</p>
+    <label for="playerName">Enter Your Name:</label><br>
+    <input type="text" id="playerName"><br>
+    <div class="button-container">
+      <button class="btn" onclick="joinRoom()">Join Room</button>
+      <button class="btn cancel-btn" onclick="goToHome()">Cancel</button>
+    </div>
+  </div>
+
+  <div class="welcome-card fade-in" id="roomLobby" style="display:none;">
+    <h1>Welcome, <span id="playerDisplayName"></span></h1>
+    <p>Room Code: <span id="displayRoomCode"></span>
+      <button class="copy-btn" onclick="copyRoomCode()">Copy</button>
+    </p>
+    <p><strong>Players Joined</strong></p>
+    <ul id="playersList" style="list-style: none; padding: 0; font-size: 18px;"></ul>
+    <div class="button-container" style="flex-direction: column;">
+      <button class="btn" id="startBtn" onclick="startGame()" disabled>Waiting for Players...</button>
+      <button class="btn cancel-btn" id="waitLobbyBtn" onclick="waitInLobby()">Wait in Lobby</button>
+    </div>
+  </div>
+
+    <div class="popup fade-in" id="rolePopup">
+    <h2>Your Role</h2>
+    <p id="roleDescription"></p>
+    <button class="btn" onclick="proceedToNight()">OK</button>
+  </div>
+
+    <div class="night-mode" id="nightMode">
+    <h1>Night Mode</h1>
+    <div class="popup fade-in night-theme" id="nightPopup">
+      <h2 id="nightTitle"></h2>
+      <p id="nightMessage"></p>
+      <select id="playerOptions"></select><br>
+      <button class="btn" onclick="submitNightAction()">Submit</button>
+    </div>
+    <div class="mafia-chat fade-in" id="mafiaChatBox">
+        <div class="mafia-chat-messages" id="mafiaChatMessages"></div>
+        <div class="mafia-chat-input-group">
+            <input type="text" class="mafia-chat-input" id="mafiaChatInput" placeholder="Type a message...">
+            <button class="mafia-chat-send-btn" onclick="sendMafiaChat()">Send</button>
+        </div>
+    </div>
+  </div>
+
+  <div class="day-mode" id="dayMode" style="display: none;">
+    <div class="public-chat-wrapper">
+      <div class="overlay"></div>
+      <div class="public-chat-box fade-in day-theme">
+        <h1 id="day-announcement">It is time to vote.</h1>
+        <h2 id="day-phase">Public Chat</h2>
+        <div class="public-chat-messages" id="publicChatMessages"></div>
+        <div class="mafia-chat-input-group">
+          <input type="text" class="mafia-chat-input" id="publicChatInput" placeholder="Type a message...">
+          <button class="mafia-chat-send-btn" onclick="sendPublicChat()">Send</button>
+        </div>
+        <button class="btn cancel-btn" style="margin-top: 10px;" onclick="closeChatAndVote()">Close Chat & Vote</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="popup voting-popup fade-in" id="votingPopup">
+    <h2>Vote for a suspect</h2>
+    <p>Choose a player to eliminate:</p>
+    <div id="votingOptions" class="voting-options"
+         style="display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; padding: 10px;"></div>
+  </div>
+  
+  <div class="popup fade-in" id="customPopup" style="display: none;">
+    <h2 id="popupTitle"></h2>
+    <p id="popupMessage"></p>
+    <div id="popupButtons" style="margin-top: 20px;"></div>
+  </div>
+
+<div class="popup fade-in" id="gameOverPopup" style="display:none;">
+    <h2 id="winnerAnnouncement">Game Over</h2>
+    <p>The game has ended.</p>
+    <div class="button-container">
+      <button class="btn" onclick="goToHome()">Back to Home</button>
+      <button class="btn" onclick="playAgain()">Play Again</button>
+    </div>
+  </div>
+
+  <script>
+    const ws = new WebSocket('ws://localhost:3000');
+    let players = [];
+    let currentPlayer = "";
+    let roomCode = "";
+    let assignedRole = "";
+    let previousPlayers = [];
+    
+    // NEW: Function to check URL parameters on page load
+    window.onload = () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const code = urlParams.get('roomCode');
+        const name = urlParams.get('playerName');
+
+        if (code && name) {
+            document.getElementById('roomCode').value = code;
+            document.getElementById('playerName').value = name;
+            joinRoom(); // Automatically join the room
+        }
+    };
+    
+    ws.onmessage = event => {
+      const data = JSON.parse(event.data);
+
+      if (data.type === 'roomUpdate') {
+          const newPlayerNames = data.players.map(p => p.name);
+          const oldPlayerNames = players.map(p => p.name);
+
+          const joinedPlayers = newPlayerNames.filter(name => !oldPlayerNames.includes(name));
+          joinedPlayers.forEach(name => {
+              displayTemporaryMessage(`${name} has joined the room.`, 'player-join-message');
+          });
+
+          const leftPlayers = oldPlayerNames.filter(name => !newPlayerNames.includes(name));
+          leftPlayers.forEach(name => {
+              displayTemporaryMessage(`${name} has left the room.`, 'player-left-message');
+          });
+
+        players = data.players;
+        updatePlayerCount();
+        updatePlayerList();
+      }
+      
+      if (data.type === 'yourRole') {
+        assignedRole = data.role;
+        showRolePopup(assignedRole);
+      }
+      if (data.type === 'gameStarted') {
+        document.getElementById("roomLobby").style.display = "none";
+        document.getElementById("rolePopup").style.display = "block";
+      }
+      
+      if (data.type === 'startNight') {
+          document.body.classList.add('night-bg');
+          document.body.classList.remove('day-bg');
+          
+          document.getElementById("dayMode").style.display = "none";
+          document.getElementById("nightMode").style.display = "flex";
+      }
+      if (data.type === 'nightResults') {
+          alert(data.message);
+          players = data.players;
+          updatePlayerList();
+      }
+      if (data.type === 'startDay') {
+          document.body.classList.remove('night-bg');
+          document.body.classList.add('day-bg');
+          
+          document.getElementById("nightMode").style.display = "none";
+          document.getElementById("dayMode").style.display = "flex";
+          document.getElementById("day-announcement").textContent = "The sun has risen.";
+          document.getElementById("publicChatBox").style.display = "flex";
+      }
+      if (data.type === 'startVoting') {
+          document.getElementById("day-announcement").textContent = "It is time to vote.";
+          document.getElementById("publicChatBox").style.display = "none";
+          showVotingPopup();
+      }
+      if (data.type === 'dayResults') {
+          alert(data.message);
+          players = data.players;
+          updatePlayerList();
+          document.getElementById("votingPopup").style.display = "none";
+      }
+      if (data.type === 'gameOver') {
+    document.getElementById("winnerAnnouncement").textContent = `${data.winner} team has won!`;
+    document.getElementById("gameOverPopup").style.display = "block";
+}
+      if (data.type === 'mafiaChat') {
+        displayMafiaChatMessage(data.sender, data.message);
+      }
+      if (data.type === 'publicChat') {
+          displayPublicChatMessage(data.sender, data.message);
+      }
+
+      if (data.type === 'playerEliminated') {
+      showCustomPopup("Eliminated", `${data.eliminated} has been voted out.`, [
+        { text: "Continue" }
+      ]);
+    }
+
+    if (data.type === 'detectiveResult') {
+      const result = data.isMafia ? `${data.player} is Mafia!` : `${data.player} is innocent.`;
+      showCustomPopup("Detective Report", result, [{ text: "Got it" }]);
+    }
+
+    if (data.type === 'announcement') {
+      showCustomPopup("Announcement", data.message, [{ text: "OK" }]);
+    }
+
+    };
+    
+    function updatePlayerCount() {
+      const playerCountElement = document.getElementById("playerCount");
+      playerCountElement.classList.add('pulse-effect');
+      setTimeout(() => playerCountElement.classList.remove('pulse-effect'), 1500);
+      playerCountElement.textContent = `Players in room: ${players.length}`;
+    }
+
+    function displayTemporaryMessage(message, className) {
+        const p = document.createElement('p');
+        p.textContent = message;
+        p.className = className;
+        document.body.appendChild(p);
+        p.style.position = 'fixed';
+        p.style.top = '50%';
+        p.style.left = '50%';
+        p.style.transform = 'translate(-50%, -50%)';
+        p.style.zIndex = '9999';
+        
+        setTimeout(() => p.remove(), 2000);
+    }
+
+    function joinRoom() {
+      const name = document.getElementById("playerName").value.trim();
+      roomCode = document.getElementById("roomCode").value.trim();
+      if (name && roomCode) {
+        currentPlayer = name;
+        ws.send(JSON.stringify({
+          type: 'joinRoom',
+          roomCode: roomCode,
+          playerName: name
+        }));
+        document.getElementById("playerDisplayName").textContent = name;
+        document.getElementById("displayRoomCode").textContent = roomCode;
+        document.getElementById("joinForm").style.display = "none";
+        document.getElementById("roomLobby").style.display = "block";
+      } else {
+        alert("Please enter both room code and name.");
+      }
+    }
+
+    function goToHome() {
+      window.location.href = 'index.html';
+    }
+
+    function updatePlayerList() {
+      const list = document.getElementById("playersList");
+      list.innerHTML = "";
+      players.forEach(p => {
+        const li = document.createElement("li");
+        li.textContent = `${p.name} (${p.status})`;
+        list.appendChild(li);
+      });
+    }
+
+    function startGame() {
+      if (players.length >= 7) {
+        ws.send(JSON.stringify({ type: 'startGame', roomCode: roomCode }));
+      } else {
+        alert("Minimum 7 players are required to start the game.");
+      }
+    }
+    
+    function showRolePopup(role) {
+      document.getElementById("roleDescription").textContent = role;
+      document.getElementById("rolePopup").style.display = "block";
+      if (role === 'Mafia') {
+        document.getElementById("mafiaChatBox").style.display = "flex";
+      }
+    }
+
+    function proceedToNight() {
+      document.getElementById("rolePopup").style.display = "none";
+      document.getElementById("nightMode").style.display = "flex";
+      const title = document.getElementById("nightTitle");
+      const message = document.getElementById("nightMessage");
+      const playerOptions = document.getElementById("playerOptions");
+      playerOptions.innerHTML = "";
+      if (["Mafia", "Medic", "Detective"].includes(assignedRole)) {
+        title.textContent = `${assignedRole}'s Turn`;
+        message.textContent = roleActionText(assignedRole);
+        players.forEach(p => {
+            if (p.name !== currentPlayer && p.status === 'alive') {
+                const option = document.createElement("option");
+                option.value = p.name;
+                option.textContent = p.name;
+                playerOptions.appendChild(option);
+            }
+        });
+        document.getElementById("nightPopup").style.display = "block";
+      } else {
+        title.textContent = "Civilians Sleeping";
+        message.textContent = "Zzz... You are asleep.";
+        document.getElementById("nightPopup").style.display = "block";
+        playerOptions.style.display = "none";
+      }
+    }
+    
+    function roleActionText(role) {
+      switch (role) {
+        case "Mafia": return "Choose a player to eliminate tonight.";
+        case "Medic": return "Choose someone to save (including yourself).";
+        case "Detective": return "Choose someone to investigate.";
+        default: return "";
+      }
+    }
+
+    function submitNightAction() {
+      const selected = document.getElementById("playerOptions").value;
+      if (assignedRole === 'Mafia') {
+        ws.send(JSON.stringify({ type: 'mafiaTarget', roomCode, playerName: currentPlayer, target: selected }));
+      } else if (assignedRole === 'Medic') {
+        ws.send(JSON.stringify({ type: 'medicSave', roomCode, playerName: currentPlayer, target: selected }));
+      } else if (assignedRole === 'Detective') {
+        ws.send(JSON.stringify({ type: 'detectiveInvestigate', roomCode, playerName: currentPlayer, target: selected }));
+      }
+      document.getElementById("nightPopup").style.display = "none";
+    }
+
+    function sendMafiaChat() {
+      const input = document.getElementById("mafiaChatInput");
+      const message = input.value.trim();
+      if (message) {
+        ws.send(JSON.stringify({
+          type: 'mafiaChat',
+          roomCode: roomCode,
+          playerName: currentPlayer,
+          chatMessage: message
+        }));
+        input.value = '';
+      }
+    }
+    
+    function displayMafiaChatMessage(sender, message) {
+      const chatMessages = document.getElementById("mafiaChatMessages");
+      const p = document.createElement('p');
+      p.textContent = `${sender}: ${message}`;
+      chatMessages.appendChild(p);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    function sendPublicChat() {
+      // document.body.classList.remove('night-bg');
+      const input = document.getElementById("publicChatInput");
+      const message = input.value.trim();
+      if (message) {
+        ws.send(JSON.stringify({
+          type: 'publicChat',
+          roomCode: roomCode,
+          playerName: currentPlayer,
+          chatMessage: message
+        }));
+        input.value = '';
+      }
+    }
+    function displayPublicChatMessage(sender, message) {
+      const chatMessages = document.getElementById("publicChatMessages");
+      const p = document.createElement('p');
+      p.textContent = `${sender}: ${message}`;
+      chatMessages.appendChild(p);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    function showVotingPopup() {
+        const votingPopup = document.getElementById("votingPopup");
+        const votingOptions = document.getElementById("votingOptions");
+        votingOptions.innerHTML = "";
+        
+        players.filter(p => p.status === 'alive').forEach(p => {
+            const button = document.createElement('button');
+            button.className = 'btn';
+            button.textContent = p.name;
+            button.onclick = () => submitVote(p.name);
+            votingOptions.appendChild(button);
+        });
+        votingPopup.style.display = 'flex';
+    }
+    function submitVote(target) {
+        ws.send(JSON.stringify({ type: 'vote', roomCode: roomCode, playerName: currentPlayer, target }));
+        alert(`You voted for ${target}.`);
+        document.getElementById("votingPopup").style.display = 'none';
+    }
+
+    function copyRoomCode() {
+        const roomCodeElement = document.getElementById("displayRoomCode");
+        const text = roomCodeElement.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            alert("Room code copied to clipboard!");
+        }).catch(err => {
+            console.error('Could not copy text: ', err);
+        });
+    }
+
+    function waitInLobby() {
+      alert("Waiting in the lobby for more players...");
+    }
+
+    function updatePlayerCount() {
+      const playerCountElement = document.getElementById("playerCount");
+      playerCountElement.classList.add('pulse-effect');
+      setTimeout(() => playerCountElement.classList.remove('pulse-effect'), 1500);
+      // playerCountElement.textContent = `Players in room: ${players.length}`;
+
+      const startBtn = document.getElementById("startBtn");
+      const waitBtn = document.getElementById("waitLobbyBtn");
+
+      if (players.length >= 2) {
+        startBtn.disabled = false;
+        startBtn.textContent = "Start Game";
+        waitBtn.style.display = "none";
+      } else {
+        startBtn.disabled = true;
+        startBtn.textContent = "Waiting for Players...";
+        waitBtn.style.display = "inline-block";
+      }
+    }
+
+    function playAgain() {
+        window.location.href = `join_room.html?roomCode=${roomCode}&playerName=${currentPlayer}`;
+    }
+
+    function closeChatAndVote() {
+      document.getElementById("dayMode").style.display = "none";
+      showVotingPopup(); 
+  }
+
+  function sendPublicChat() {
+    const input = document.getElementById("publicChatInput");
+    const message = input.value.trim();
+    if (message) {
+      // Replace with your WebSocket logic
+      console.log("Public Chat Message Sent:", message);
+      input.value = '';
+    }
+  }
+
+  function updatePlayerList() {
+    const list = document.getElementById("playersList");
+    list.innerHTML = "";
+    players.forEach(p => {
+      const li = document.createElement("li");
+      li.textContent = `${p.name} (${p.status})`;
+      if (p.status === 'eliminated') li.classList.add('eliminated');
+      list.appendChild(li);
+    });
+  }
+
+  function showCustomPopup(title, message, buttons = []) {
+  document.getElementById("popupTitle").textContent = title;
+  document.getElementById("popupMessage").textContent = message;
+
+  const buttonsContainer = document.getElementById("popupButtons");
+  buttonsContainer.innerHTML = "";
+
+  buttons.forEach(({ text, onClick }) => {
+    const btn = document.createElement("button");
+    btn.textContent = text;
+    btn.className = "btn";
+    btn.onclick = () => {
+      document.getElementById("customPopup").style.display = "none";
+      if (onClick) onClick();
+    };
+    buttonsContainer.appendChild(btn);
+  });
+
+  document.getElementById("customPopup").style.display = "block";
+}
+
+
+  </script>
+
+</body>
+</html>

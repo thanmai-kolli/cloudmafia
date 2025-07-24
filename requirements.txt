@@ -1,0 +1,6 @@
+express
+http
+ws
+mongoose
+body-parser
+cors

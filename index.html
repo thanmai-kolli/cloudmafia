@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cloud Mafia</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@600&display=swap');
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background: url('https://webimages8.s3.ap-south-1.amazonaws.com/bg.jpg') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      overflow-x: hidden;
+    }
+
+    nav {
+      background: rgba(0, 0, 0, 0.85);
+      padding: 15px 50px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    nav h1 {
+      color: crimson;
+      font-size: 28px;
+    }
+
+    nav ul {
+      list-style: none;
+      display: flex;
+      gap: 30px;
+    }
+
+    nav ul li {
+      position: relative;
+    }
+
+    nav ul li a {
+      color: #fff;
+      text-decoration: none;
+      font-size: 18px;
+      transition: 0.3s;
+    }
+
+    nav ul li a:hover {
+      color: crimson;
+      text-shadow: 0 0 5px crimson;
+    }
+
+    nav ul li ul {
+      display: none;
+      position: absolute;
+      top: 35px;
+      left: 0;
+      background: rgba(0,0,0,0.9);
+      padding: 10px;
+      border-radius: 5px;
+      min-width: 130px;
+    }
+
+    nav ul li:hover ul {
+      display: block;
+    }
+
+    nav ul li ul li {
+      margin-bottom: 5px;
+      white-space: nowrap;
+    }
+
+    .about {
+      display: flex;
+      padding: 60px 80px;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+    }
+
+    .about img {
+      width: 400px;
+      border-radius: 10px;
+      box-shadow: 0 0 20px crimson;
+      transition: transform 0.5s ease;
+    }
+
+    .about img:hover {
+      transform: scale(1.08);
+    }
+
+    .about-text {
+      max-width: 600px;
+      font-size: 20px;
+      background: rgba(0,0,0,0.6);
+      padding: 30px;
+      border-radius: 15px;
+      line-height: 1.7;
+      box-shadow: 0 0 20px rgba(255,255,255,0.2);
+    }
+
+    .roles-wrapper {
+      overflow: visible;
+      position: relative;
+      z-index: 1;
+      margin-top: 50px;
+    }
+
+    .roles-container {
+      display: flex;
+      overflow: visible;
+      border-top: 2px solid rgba(255,255,255,0.2);
+      border-bottom: 2px solid rgba(255,255,255,0.2);
+      position: relative;
+      padding: 0;
+      height: 400px;
+      z-index: 1;
+    }
+
+    .role {
+      flex: 1;
+      position: relative;
+      overflow: visible;
+      transition: 0.5s;
+      z-index: 1;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .role img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: 0.5s ease-in-out;
+      filter: brightness(0.8);
+      transform: scale(1);
+      z-index: 1;
+    }
+
+    .role:hover img {
+      transform: scale(1.6);
+      filter: brightness(1.1);
+      z-index: 3;
+    }
+
+    .role:hover {
+      z-index: 5;
+    }
+
+    .role-description {
+      position: absolute;
+      bottom: -50px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0,0,0,0.85);
+      color: #fff;
+      padding: 10px 15px;
+      border-radius: 10px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      font-size: 16px;
+      width: 90%;
+      text-align: center;
+      z-index: 4;
+    }
+
+    .role:hover .role-description {
+      opacity: 1;
+    }
+
+    .rules {
+      margin: 100px auto 60px;
+      padding: 30px;
+      max-width: 90%;
+      border-radius: 25px;
+      background: rgba(0,0,0,0.5);
+      border: 2px solid #ebe596;
+      transition: 0.4s ease;
+      box-shadow: 0 0 20px #ebe596;
+    }
+
+    .rules:hover {
+      background: rgba(0,0,0,0.7);
+      box-shadow: 0 0 30px #f8de4c, 0 0 60px #f8de4c;
+    }
+
+    .rules h2 {
+      text-align: center;
+      font-size: 28px;
+      color: #f8de4c;
+    }
+
+    .rules ul {
+      list-style: disc;
+      padding-left: 30px;
+      font-size: 18px;
+      line-height: 1.8;
+    }
+
+    .play-btn {
+      display: block;
+      width: fit-content;
+      margin: 50px auto;
+      padding: 15px 40px;
+      font-size: 22px;
+      background: crimson;
+      color: white;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 0 20px crimson;
+      transition: 0.3s;
+      text-decoration: none;
+    }
+
+    .play-btn:hover {
+      background: #ff0033;
+      box-shadow: 0 0 30px crimson, 0 0 50px crimson;
+    }
+
+    .contact-section {
+      background: rgba(0, 0, 0, 0.7);
+      padding: 60px 30px;
+      text-align: center;
+      border-top: 3px solid crimson;
+      margin-top: 60px;
+    }
+
+    .contact-section h2 {
+      font-size: 28px;
+      margin-bottom: 20px;
+      color: crimson;
+    }
+
+    .contact-section p {
+      font-size: 18px;
+      margin: 10px 0;
+    }
+
+    .contact-section a {
+      color: #f8de4c;
+      text-decoration: none;
+    }
+
+    @media (max-width: 768px) {
+      .about {
+        flex-direction: column;
+        padding: 40px 20px;
+      }
+      .about img {
+        width: 100%;
+        margin-bottom: 20px;
+      }
+      .about-text {
+        font-size: 16px;
+      }
+      .roles-container {
+        flex-direction: column;
+        height: auto;
+      }
+      .role img {
+        height: 300px;
+      }
+    }
+    .about-text:hover,
+    .rules:hover,
+    .contact-section:hover {
+      box-shadow: 0 0 30px crimson, 0 0 50px crimson;
+    }
+
+  /* Popup styles */
+  .popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    width: 100vw;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 1001;
+  }
+
+  .popup-card {
+    background: #111;
+    border: 2px solid crimson;
+    border-radius: 15px;
+    padding: 40px;
+    text-align: center;
+    box-shadow: 0 0 30px crimson;
+    animation: fadeIn 0.3s ease;
+  }
+
+  .popup-card h2 {
+    margin-bottom: 20px;
+    font-size: 28px;
+    color: crimson;
+  }
+
+  .popup-card button {
+    margin: 10px;
+    padding: 12px 25px;
+    font-size: 18px;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    background: crimson;
+    color: white;
+    transition: 0.3s ease;
+  }
+
+  .popup-card button:hover {
+    background: #ff0033;
+    box-shadow: 0 0 20px crimson;
+  }
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: scale(0.8); }
+    to { opacity: 1; transform: scale(1); }
+  }
+
+  </style>
+  <script>
+
+  function showPopup() {
+    document.getElementById('popup').style.display = 'flex';
+  }
+
+  function hidePopup() {
+    document.getElementById('popup').style.display = 'none';
+  }
+
+  function goToCreateRoom() {
+    window.location.href = 'create_room.html';
+  }
+
+  function goToJoinRoom() {
+    window.location.href = 'join_room.html';
+  }
+  function scrollToTop(event) {
+    event.preventDefault();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+</script>
+
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav>
+  <div style="display: flex; align-items: center; gap: 10px;">
+    <img src="https://webimages8.s3.ap-south-1.amazonaws.com/logo.jpg" alt="Logo" style="width: 40px; height: 40px; object-fit: contain;">
+    <h1>Cloud Mafia</h1>
+  </div>
+  <ul>
+    <li><a href="#" onclick="scrollToTop(event)">Home</a></li>
+    <li>
+      <a href="create_room.html">Create Room</a>
+    </li>
+    <li><a href="#contact">Contact Us</a></li>
+  </ul>
+</nav>
+
+  <!-- About the Game -->
+  <section class="about">
+    <img src="https://webimages8.s3.ap-south-1.amazonaws.com/about.png" alt="About Image">
+    <div class="about-text">
+      <h2 style = "color: #ff0033;">Welcome to Cloud Mafia</h2>
+      <p>
+        Cloud Mafia is the exciting social deduction game, where deception and strategy meet. Play with your friends, be assigned a secret role, and switch through the shadows trying to be a mafia, detective, medic, or an innocent civilian. Never put your trust in people.
+      </p>
+    </div>
+  </section>
+
+  <!-- Roles Section -->
+  <div class="roles-wrapper">
+    <div class="roles-container">
+      <div class="role">
+        <img src="https://webimages8.s3.ap-south-1.amazonaws.com/final+mafia.jpeg" alt="Mafia">
+        <div class="role-description">😈 Mafia: Eliminate the civilians during the night. Stay undetected.</div>
+      </div>
+      <div class="role">
+        <img src="https://webimages8.s3.ap-south-1.amazonaws.com/civilians.jpeg" alt="Civilian">
+        <div class="role-description">🧍 Civilian: Find and vote out the mafia to survive.</div>
+      </div>
+      <div class="role">
+        <img src="https://webimages8.s3.ap-south-1.amazonaws.com/detective.jpeg" alt="Detective">
+        <div class="role-description">🕵️ Detective: Investigate one player each night to reveal their role.</div>
+      </div>
+      <div class="role">
+        <img src="https://webimages8.s3.ap-south-1.amazonaws.com/medic.jpeg" alt="Medic">
+        <div class="role-description">🩺 Medic: Choose one player to protect from death each night.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rules Section -->
+  <section class="rules">
+    <h2>Game Rules</h2>
+    <ul>
+      <li>Minimum 7 players to start a room.</li>
+      <li>Each player is assigned a secret role.</li>
+      <li>The game alternates between Night and Day phases.</li>
+      <li>At Night, the mafia selects a target, and the medic chooses someone to save.</li>
+      <li>During the Day, players discuss and vote to eliminate one suspected player.</li>
+      <li>The game continues until the mafia is eliminated or they outnumber civilians.</li>
+    </ul>
+  </section>
+
+  <!-- Play Button -->
+  <!-- Play Button -->
+<button class="play-btn" onclick="showPopup()">🎮 Play the Game</button>
+<!-- Popup Overlay -->
+<div class="popup-overlay" id="popup">
+  <div class="popup-card">
+    <h2>Choose an Option</h2>
+    <button onclick="goToCreateRoom()">Create Room</button>
+    <button onclick="goToJoinRoom()">Join Room</button><br><br>
+    <button onclick="hidePopup()" style="background:#444;">Cancel</button>
+  </div>
+</div>
+
+
+  <!-- Contact Us Section -->
+  <section id="contact" class="contact-section">
+    <h2>📬 Contact Us</h2>
+    <p>💌 Email: <a href="mailto:cloudmafia@gamehub.com">cloudmafia@gamehub.com</a></p>
+    <p>📸 Instagram: <a href="https://instagram.com/cloudmafia" target="_blank">@cloudmafia</a></p>
+    <p>🧠 Have ideas? Questions? Bugs? Drop us a line!</p>
+  </section>
+  
+
+</body>
+</html>
