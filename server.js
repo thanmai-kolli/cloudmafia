@@ -13,6 +13,11 @@ const wss = new WebSocket.Server({ server });
 
 app.use(bodyParser.json());
 app.use(cors());
+const path = require('path');
+
+app.get('/',            (req, res) => res.sendFile(path.join(__dirname, 'index.html')));
+app.get('/join-room',   (req, res) => res.sendFile(path.join(__dirname, 'join_room.html')));
+app.get('/create-room', (req, res) => res.sendFile(path.join(__dirname, 'create_room.html')));
 
 const mongoURI = 'mongodb+srv://thanmaikolli:thanmai3497@cluster0.slgwelu.mongodb.net/cloudmafia?retryWrites=true&w=majority&appName=Cluster0';
 
