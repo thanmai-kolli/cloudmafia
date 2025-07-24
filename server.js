@@ -5,7 +5,7 @@ const mongoose = require('mongoose');
 const bodyParser = require('body-parser');
 const cors = require('cors');
 
-const Room = require('./models/Room');
+const Room = require('./Room');
 
 const app = express();
 const server = http.createServer(app);
